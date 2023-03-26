@@ -1,7 +1,10 @@
-const { XMarkIcon, PaperClipIcon } = require("@heroicons/react/24/solid")
-const { set } = require("immer/dist/internal")
-const { useState } = require("react")
-const { default: Dropzone } = require("react-dropzone")
+import {
+  PaperAirplaneIcon,
+  PaperClipIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/solid"
+import React, { useState } from "react"
+import Dropzone from "react-dropzone"
 
 const MessageFormUI = ({
   setAttachment,
@@ -35,29 +38,45 @@ const MessageFormUI = ({
       <div className="message-form">
         <div className="message-form-input-container">
           <input
+            className="message-form-input"
             type="text"
             value={message}
             onChange={handleChange}
             placeholder="Send a message..."
           />
         </div>
+
+        <div className="message-form-icons">
+          <Dropzone
+            acceptedFiles=".jpg,.jpeg,.png"
+            multiple={false}
+            noClick={true}
+            onDrop={(acceptedFiles) => {
+              setAttachment(acceptedFiles[0])
+              setPreview(URL.createObjectURL(acceptedFiles[0]))
+            }}
+          >
+            {({ getRootProps, getInputProps, open }) => (
+              <div {...getRootProps()}>
+                <input {...getInputProps()} />
+                <PaperClipIcon
+                  className="message-form-icon-clip"
+                  onClick={open}
+                />
+              </div>
+            )}
+          </Dropzone>
+
+          <hr className="vertical-line" />
+          <PaperAirplaneIcon
+            className="message-form-icon-airplane"
+            onClick={() => {
+              setPreview("")
+              handleSubmit()
+            }}
+          />
+        </div>
       </div>
-      <Dropzone
-        acceptedFiles=".jpg,.jepg,.png"
-        multiple={false}
-        noClick={true}
-        onDrop={(acceptedFiles) => {
-          setAttachment(acceptedFiles[0])
-          setPreview(URL.createObjectURL(acceptedFiles[0]))
-        }}
-      >
-        {({ getRootProps, getInputProps, open }) => (
-          <div {...getRootProps()}>
-            <input {...getInputProps()} />
-            <PaperClipIcon className="message-form-icon-clip" onClick={open} />
-          </div>
-        )}
-      </Dropzone>
     </div>
   )
 }
