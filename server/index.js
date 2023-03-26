@@ -17,6 +17,7 @@ app.use(cors())
 app.use("/openai", openAiRoutes)
 const configuration = new Configuration({
   apiKey: process.env.OPEN_API_KEY,
+  // basePath: `https://${process.env.OPENAI_PROXY_URL}/v1`,
 })
 export const openai = new OpenAIApi(configuration)
 
