@@ -1,11 +1,14 @@
-import { usePostAiTextMutation } from "@/state/api"
-import React, { useState } from "react"
+import { usePostAiTextMutation, usePostAiAssistMutation } from "@/state/api"
+import React, { useState, useEffect } from "react"
 import MessageFormUI from "./MessageFormUI"
+import { useDebounce } from "react-use"
 
 const Ai = ({ props, activeChat }) => {
   const [message, setMessage] = useState("")
   const [attachment, setAttachment] = useState("")
-  const [trigger] = usePostAiTextMutation()
+  const [triggerChat] = usePostAiTextMutation()
+  const [appendText, setAppendText] = useState("")
+  const [triggerAssist, assistResult] = usePostAiAssistMutation()
 
   const handleChange = (e) => setMessage(e.target.value)
 
@@ -24,10 +27,33 @@ const Ai = ({ props, activeChat }) => {
     }
 
     props.onSubmit(form)
-    trigger(form)
+    triggerChat(form)
     setMessage("")
     setAttachment("")
   }
+
+  useDebounce(
+    () => {
+      triggerAssist({ text: message })
+    },
+    250,
+    [message]
+  )
+
+  const handleKeyDown = (e) => {
+    // enter and tab
+    if (e.keyCode === 9 || e.keyCode === 13) {
+      e.preventDefault()
+      setMessage(`${message} ${appendText}`)
+    }
+  }
+
+  useEffect(() => {
+    let returnedText = assistResult.data?.text
+    if (returnedText) {
+      setAppendText(returnedText)
+    }
+  }, [assistResult])
 
   return (
     <MessageFormUI
@@ -35,6 +61,8 @@ const Ai = ({ props, activeChat }) => {
       message={message}
       handleChange={handleChange}
       handleSubmit={handleSubmit}
+      appendText={appendText}
+      handleKeyDown={handleKeyDown}
     />
   )
 }

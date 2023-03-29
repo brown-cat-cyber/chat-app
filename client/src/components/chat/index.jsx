@@ -10,12 +10,13 @@ import Ai from "../customMessageForms/Ai"
 import AiCode from "../customMessageForms/AiCode"
 import AiAssist from "../customMessageForms/AiAssist"
 
-const Chat = () => {
+const Chat = ({ user, secret }) => {
   const chatProps = useMultiChatLogic(
     import.meta.env.VITE_PROJECT_ID,
-    "testuser",
-    "1234"
+    user,
+    secret
   )
+  console.log(chatProps)
 
   return (
     <div style={{ flexBasis: "100%" }}>
